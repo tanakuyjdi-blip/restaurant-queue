@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>หน้ารอคิว</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#8e44ad,#6c5ce7,#a29bfe);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.card{
+    width:420px;
+    background:white;
+    padding:30px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:0 15px 35px rgba(0,0,0,.3);
+}
+
+h1{
+    color:#6c5ce7;
+    margin-bottom:20px;
+}
+
+.queue{
+    font-size:70px;
+    color:#8e44ad;
+    font-weight:bold;
+    margin:15px 0;
+}
+
+.info{
+    font-size:18px;
+    margin:10px 0;
+}
+
+.current{
+    margin-top:20px;
+    padding:15px;
+    border-radius:15px;
+    background:#f3e8ff;
+}
+
+.current h2{
+    color:#6c5ce7;
+}
+
+.currentQueue{
+    font-size:50px;
+    color:#8e44ad;
+    font-weight:bold;
+}
+
+.status{
+    margin-top:20px;
+    font-size:24px;
+    font-weight:bold;
+    color:#ff9800;
+}
+
+.left{
+    margin-top:10px;
+    font-size:18px;
+    color:#555;
+}
+
+.ready{
+    color:red;
+    font-size:28px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="card">
+
+<h1>💜 หน้ารอคิว 💜</h1>
+
+<div class="queue" id="myQueue"></div>
+
+<div class="info">
+👤 <b id="myName"></b>
+</div>
+
+<div class="info">
+👥 จำนวนคน : <b id="myPeople"></b>
+</div>
+
+<div class="current">
+
+<h2>กำลังเรียกคิว</h2>
+
+<div class="currentQueue" id="currentQueue">
+A000
+</div>
+
+</div>
+
+<div class="left" id="leftQueue">
+เหลืออีก 0 คิว
+</div>
+
+<div class="status" id="status">
+กรุณารอสักครู่...
+</div>
+
+</div>
+
+<script>
+
+let myQueue = localStorage.getItem("myQueue");
+let myName = localStorage.getItem("myName");
+let myPeople = localStorage.getItem("myPeople");
+
+document.getElementById("myQueue").innerText = myQueue;
+document.getElementById("myName").innerText = myName;
+document.getElementById("myPeople").innerText = myPeople;
+
+function update(){
+
+    let current = localStorage.getItem("currentQueue") || "A000";
+    document.getElementById("currentQueue").innerText = current;
+
+    let myNumber = parseInt(myQueue.substring(1));
+    let currentNumber = parseInt(current.substring(1));
+
+    let left = myNumber - currentNumber;
+
+    if(left <= 0){
+
+        document.getElementById("status").innerHTML="🎉 ถึงคิวของคุณแล้ว";
+        document.getElementById("status").className="status ready";
+
+        document.getElementById("leftQueue").innerHTML="เชิญติดต่อพนักงาน";
+
+    }else{
+
+        document.getElementById("status").innerHTML="⏳ กรุณารอ";
+
+        document.getElementById("leftQueue").innerHTML="เหลืออีก <b>"+left+"</b> คิว";
+
+    }
+
+}
+
+update();
+
+setInterval(update,1000);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบจองคิวร้านอาหาร</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>🍽 ระบบจองคิวร้านอาหาร</h1>
+
+<div class="current">
+<h2>กำลังเรียกคิว</h2>
+<h1 id="currentQueue">A000</h1>
+</div>
+
+<div class="booking">
+
+<input type="text" id="name" placeholder="ชื่อลูกค้า">
+
+<input type="number" id="people" placeholder="จำนวนกี่กล่อง">
+
+<button onclick="bookQueue()">รับบัตรคิว</button>
+
+</div>
+
+<div class="waiting">
+
+<h2>รายการคิว</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>คิว</th>
+
+<th>ชื่อ</th>
+
+<th>จำนวนกี่กล่อง</th>
+
+</tr>
+
+</thead>
+
+<tbody id="queueTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="admin">
+
+<button class="next" onclick="nextQueue()">เรียกคิวถัดไป</button>
+
+<button class="reset" onclick="resetQueue()">รีเซ็ต</button>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
