@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>จองคิวร้านอาหาร</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- หัวข้อ -->
+    <h1>🍽 ระบบจองคิวร้านอาหาร</h1>
+
+
+    <!-- =========================
+         เลือกร้าน
+    ========================== -->
+
+    <div class="shops">
+
+        <!-- ร้านอาหารตามสั่ง -->
+
+        <div class="shop active"
+             id="shopA"
+             onclick="selectShop('A')">
+
+            <div class="shop-icon">
+                🍳
+            </div>
+
+            <h2>
+                ร้านอาหารตามสั่ง
+            </h2>
+
+            <p>
+                อาหารตามสั่ง
+            </p>
+
+        </div>
+
+
+        <!-- ร้านหม่าล่า -->
+
+        <div class="shop"
+             id="shopB"
+             onclick="selectShop('B')">
+
+            <div class="shop-icon">
+                🌶️
+            </div>
+
+            <h2>
+                ร้านหม่าล่า
+            </h2>
+
+            <p>
+                หม่าล่าและของย่าง
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ร้านที่เลือก
+    ========================== -->
+
+    <div class="selected-shop">
+
+        <h2 id="selectedShop">
+            กำลังจองคิวร้านอาหารตามสั่ง
+        </h2>
+
+    </div>
+
+
+    <!-- =========================
+         คิวปัจจุบัน
+    ========================== -->
+
+    <div class="current">
+
+        <h2>
+            กำลังเรียกคิว
+        </h2>
+
+        <h1 id="currentQueue">
+            A000
+        </h1>
+
+    </div>
+
+
+    <!-- =========================
+         จองคิว
+    ========================== -->
+
+    <div class="booking">
+
+        <input
+            type="text"
+            id="name"
+            placeholder="ชื่อลูกค้า">
+
+
+        <input
+            type="number"
+            id="people"
+            placeholder="จำนวนคน"
+            min="1">
+
+
+        <button onclick="bookQueue()">
+            🎫 รับบัตรคิว
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         รายการคิว
+    ========================== -->
+
+    <div class="waiting">
+
+        <h2>
+            📋 รายการคิว
+        </h2>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        คิว
+                    </th>
+
+                    <th>
+                        ชื่อ
+                    </th>
+
+                    <th>
+                        จำนวนคน
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="queueTable">
+
+                <!-- JavaScript จะแสดงคิวตรงนี้ -->
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- =========================
+         จัดการคิว
+    ========================== -->
+
+    <div class="admin">
+
+        <button
+            class="next"
+            onclick="nextQueue()">
+
+            📢 เรียกคิวถัดไป
+
+        </button>
+
+
+        <button
+            class="reset"
+            onclick="resetQueue()">
+
+            🗑️ รีเซ็ต
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         สถานะของทั้ง 2 ร้าน
+    ========================== -->
+
+    <div class="other-queue">
+
+        <h2>
+            📊 สถานะคิวของทั้ง 2 ร้าน
+        </h2>
+
+
+        <div class="queue-status">
+
+
+            <!-- ร้านตามสั่ง -->
+
+            <div>
+
+                <h3>
+                    🍳 ร้านอาหารตามสั่ง
+                </h3>
+
+                <p>
+                    คิวปัจจุบัน
+                </p>
+
+                <strong id="statusA">
+                    A000
+                </strong>
+
+            </div>
+
+
+            <!-- ร้านหม่าล่า -->
+
+            <div>
+
+                <h3>
+                    🌶️ ร้านหม่าล่า
+                </h3>
+
+                <p>
+                    คิวปัจจุบัน
+                </p>
+
+                <strong id="statusB">
+                    B000
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
