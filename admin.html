@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>ระบบแอดมิน - RestaurantQueue</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+
+    min-height: 100vh;
+
+    background:
+        linear-gradient(
+            135deg,
+            #667eea,
+            #764ba2
+        );
+
+    padding: 25px;
+
+}
+
+.container {
+
+    max-width: 1100px;
+
+    margin: auto;
+
+}
+
+.header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+
+    gap: 15px;
+
+}
+
+h1 {
+
+    color: white;
+
+}
+
+.logout {
+
+    width: auto;
+
+    margin: 0;
+
+    padding: 12px 20px;
+
+    background: #e74c3c;
+
+}
+
+.grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 20px;
+
+}
+
+.shop {
+
+    background: white;
+
+    border-radius: 25px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(0,0,0,.25);
+
+}
+
+.shop h2 {
+
+    text-align: center;
+
+    color: #6c5ce7;
+
+    margin-bottom: 15px;
+
+}
+
+.label {
+
+    text-align: center;
+
+    color: #666;
+
+}
+
+.current {
+
+    text-align: center;
+
+    font-size: 65px;
+
+    font-weight: bold;
+
+    color: #764ba2;
+
+    margin: 10px 0 20px;
+
+}
+
+button {
+
+    width: 100%;
+
+    border: none;
+
+    border-radius: 12px;
+
+    padding: 15px;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+    color: white;
+
+    margin-top: 10px;
+
+}
+
+.next {
+
+    background: #27ae60;
+
+}
+
+.next:hover {
+
+    background: #219150;
+
+}
+
+.reset {
+
+    background: #e74c3c;
+
+}
+
+.reset:hover {
+
+    background: #c0392b;
+
+}
+
+.queue-list {
+
+    margin-top: 25px;
+
+}
+
+.queue-list h3 {
+
+    margin-bottom: 10px;
+
+    color: #444;
+
+}
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+th,
+td {
+
+    padding: 10px;
+
+    text-align: center;
+
+    border-bottom:
+        1px solid #ddd;
+
+}
+
+th {
+
+    background: #f3e8ff;
+
+    color: #6c5ce7;
+
+}
+
+.empty {
+
+    color: #777;
+
+    padding: 20px;
+
+}
+
+.total {
+
+    text-align: center;
+
+    margin-top: 15px;
+
+    color: #555;
+
+    font-weight: bold;
+
+}
+
+.status {
+
+    background: white;
+
+    margin-top: 20px;
+
+    padding: 15px;
+
+    border-radius: 15px;
+
+    text-align: center;
+
+    color: #27ae60;
+
+    font-weight: bold;
+
+}
+
+.admin-email {
+
+    color: white;
+
+    margin-top: 5px;
+
+    font-size: 14px;
+
+}
+
+@media (max-width: 700px) {
+
+    .grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .header {
+
+        flex-direction: column;
+
+    }
+
+    .logout {
+
+        width: 100%;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<!-- ================================= -->
+<!-- HEADER -->
+<!-- ================================= -->
+
+<div class="header">
+
+    <div>
+
+        <h1>
+            🔐 ระบบแอดมินจัดการคิว
+        </h1>
+
+        <div
+            class="admin-email"
+            id="adminEmail"
+        >
+            กำลังตรวจสอบ...
+        </div>
+
+    </div>
+
+
+    <button
+        class="logout"
+        id="logoutButton"
+    >
+        🚪 ออกจากระบบ
+    </button>
+
+</div>
+
+
+<!-- ================================= -->
+<!-- ร้าน -->
+<!-- ================================= -->
+
+<div class="grid">
+
+
+<!-- ================================= -->
+<!-- ร้าน A -->
+<!-- ================================= -->
+
+<div class="shop">
+
+<h2>
+    🍳 ร้านอาหารตามสั่ง
+</h2>
+
+<div class="label">
+    กำลังเรียกคิว
+</div>
+
+<div
+    class="current"
+    id="currentA"
+>
+    A000
+</div>
+
+
+<button
+    class="next"
+    id="nextA"
+>
+    📢 เรียกคิวถัดไป
+</button>
+
+
+<button
+    class="reset"
+    id="resetA"
+>
+    🗑️ รีเซ็ตร้านนี้
+</button>
+
+
+<div class="queue-list">
+
+<h3>
+    📋 คิวที่รอ
+</h3>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>คิว</th>
+
+<th>ชื่อ</th>
+
+<th>คน</th>
+
+</tr>
+
+</thead>
+
+<tbody id="queueA">
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<div
+    class="total"
+    id="totalA"
+>
+    รอ 0 คิว
+</div>
+
+</div>
+
+
+<!-- ================================= -->
+<!-- ร้าน B -->
+<!-- ================================= -->
+
+<div class="shop">
+
+<h2>
+    🌶️ ร้านหม่าล่า
+</h2>
+
+<div class="label">
+    กำลังเรียกคิว
+</div>
+
+<div
+    class="current"
+    id="currentB"
+>
+    B000
+</div>
+
+
+<button
+    class="next"
+    id="nextB"
+>
+    📢 เรียกคิวถัดไป
+</button>
+
+
+<button
+    class="reset"
+    id="resetB"
+>
+    🗑️ รีเซ็ตร้านนี้
+</button>
+
+
+<div class="queue-list">
+
+<h3>
+    📋 คิวที่รอ
+</h3>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>คิว</th>
+
+<th>ชื่อ</th>
+
+<th>คน</th>
+
+</tr>
+
+</thead>
+
+<tbody id="queueB">
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<div
+    class="total"
+    id="totalB"
+>
+    รอ 0 คิว
+</div>
+
+</div>
+
+
+</div>
+
+
+<div
+    class="status"
+    id="status"
+>
+    🟢 กำลังเชื่อมต่อ Firebase...
+</div>
+
+
+</div>
+
+
+<!-- ================================= -->
+<!-- FIREBASE -->
+<!-- ================================= -->
+
+<script type="module">
+
+
+import {
+
+    initializeApp
+
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+
+    getDatabase,
+
+    ref,
+
+    onValue,
+
+    set,
+
+    update,
+
+    remove
+
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+import {
+
+    getAuth,
+
+    onAuthStateChanged,
+
+    signOut
+
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+// =====================================
+// FIREBASE CONFIG
+// =====================================
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyCinwLrAnugbxn2X60C8qTqBHWNDXzHB7c",
+
+    authDomain:
+        "restaurantqueue-80705.firebaseapp.com",
+
+    databaseURL:
+        "https://restaurantqueue-80705-default-rtdb.firebaseio.com",
+
+    projectId:
+        "restaurantqueue-80705",
+
+    storageBucket:
+        "restaurantqueue-80705.firebasestorage.app",
+
+    messagingSenderId:
+        "944772230709",
+
+    appId:
+        "1:944772230709:web:8a73bee17f067c8c48cb7c",
+
+    measurementId:
+        "G-8NK846F8XE"
+
+};
+
+
+// =====================================
+// เริ่ม Firebase
+// =====================================
+
+const app =
+    initializeApp(
+        firebaseConfig
+    );
+
+
+const db =
+    getDatabase(app);
+
+
+const auth =
+    getAuth(app);
+
+
+// =====================================
+// ตรวจสอบ Login
+// =====================================
+
+onAuthStateChanged(
+
+    auth,
+
+    (user) => {
+
+        if (!user) {
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "adminEmail"
+        ).innerText =
+            "👤 " + user.email;
+
+
+        document.getElementById(
+            "status"
+        ).innerText =
+            "🟢 เข้าสู่ระบบแล้ว";
+
+
+        loadQueues();
+
+        loadCurrent();
+
+    }
+
+);
+
+
+// =====================================
+// ตัวแปรคิว
+// =====================================
+
+let queueA = [];
+
+let queueB = [];
+
+
+// =====================================
+// โหลดคิว
+// =====================================
+
+function loadQueues() {
+
+    onValue(
+
+        ref(
+            db,
+            "queues"
+        ),
+
+        (snapshot) => {
+
+            const data =
+                snapshot.val() || {};
+
+
+            queueA = [];
+
+            queueB = [];
+
+
+            Object.keys(data).forEach(
+
+                (id) => {
+
+                    const customer =
+                        data[id];
+
+
+                    if (
+                        customer.status !==
+                        "waiting"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const item = {
+
+                        id: id,
+
+                        ...customer
+
+                    };
+
+
+                    if (
+                        customer.shop ===
+                        "A"
+                    ) {
+
+                        queueA.push(item);
+
+                    }
+
+
+                    if (
+                        customer.shop ===
+                        "B"
+                    ) {
+
+                        queueB.push(item);
+
+                    }
+
+                }
+
+            );
+
+
+            queueA.sort(
+
+                (a,b) =>
+
+                    Number(
+                        a.queueNumber
+                    ) -
+
+                    Number(
+                        b.queueNumber
+                    )
+
+            );
+
+
+            queueB.sort(
+
+                (a,b) =>
+
+                    Number(
+                        a.queueNumber
+                    ) -
+
+                    Number(
+                        b.queueNumber
+                    )
+
+            );
+
+
+            showQueue(
+                "A",
+                queueA
+            );
+
+
+            showQueue(
+                "B",
+                queueB
+            );
+
+        },
+
+        (error) => {
+
+            console.error(error);
+
+            document.getElementById(
+                "status"
+            ).innerText =
+                "🔴 Firebase Error: " +
+                error.message;
+
+        }
+
+    );
+
+}
+
+
+// =====================================
+// แสดงคิว
+// =====================================
+
+function showQueue(
+    shop,
+    queue
+) {
+
+    const table =
+        document.getElementById(
+            "queue" + shop
+        );
+
+
+    const total =
+        document.getElementById(
+            "total" + shop
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (
+        queue.length === 0
+    ) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="3"
+                    class="empty"
+                >
+                    ไม่มีคิวรอ
+                </td>
+
+            </tr>
+
+        `;
+
+
+        total.innerText =
+            "รอ 0 คิว";
+
+
+        return;
+
+    }
+
+
+    queue.forEach(
+
+        (customer) => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    <strong>
+                        ${customer.number}
+                    </strong>
+                </td>
+
+                <td>
+                    ${customer.name}
+                </td>
+
+                <td>
+                    ${customer.people}
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+
+    );
+
+
+    total.innerText =
+        "รอ " +
+        queue.length +
+        " คิว";
+
+}
+
+
+// =====================================
+// โหลดคิวปัจจุบัน
+// =====================================
+
+function loadCurrent() {
+
+    onValue(
+
+        ref(
+            db,
+            "current"
+        ),
+
+        (snapshot) => {
+
+            const data =
+                snapshot.val() || {};
+
+
+            const currentA =
+                Number(
+                    data.A?.number
+                ) || 0;
+
+
+            const currentB =
+                Number(
+                    data.B?.number
+                ) || 0;
+
+
+            document.getElementById(
+                "currentA"
+            ).innerText =
+
+                "A" +
+
+                String(
+                    currentA
+                ).padStart(
+                    3,
+                    "0"
+                );
+
+
+            document.getElementById(
+                "currentB"
+            ).innerText =
+
+                "B" +
+
+                String(
+                    currentB
+                ).padStart(
+                    3,
+                    "0"
+                );
+
+        }
+
+    );
+
+}
+
+
+// =====================================
+// เรียกคิว
+// =====================================
+
+async function nextQueue(shop) {
+
+    const queue =
+        shop === "A"
+            ? queueA
+            : queueB;
+
+
+    if (
+        queue.length === 0
+    ) {
+
+        alert(
+            "❌ ไม่มีคิวรอ"
+        );
+
+        return;
+
+    }
+
+
+    const customer =
+        queue[0];
+
+
+    const number =
+        Number(
+            customer.queueNumber
+        );
+
+
+    try {
+
+        await set(
+
+            ref(
+                db,
+                "current/" +
+                shop
+            ),
+
+            {
+
+                number:
+                    number,
+
+                queue:
+                    customer.number,
+
+                updatedAt:
+                    Date.now()
+
+            }
+
+        );
+
+
+        await update(
+
+            ref(
+                db,
+                "queues/" +
+                customer.id
+            ),
+
+            {
+
+                status:
+                    "called"
+
+            }
+
+        );
+
+
+        alert(
+            "📢 เรียกคิว " +
+            customer.number +
+            " แล้ว"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "❌ เรียกคิวไม่สำเร็จ\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+// =====================================
+// รีเซ็ต
+// =====================================
+
+async function resetQueue(shop) {
+
+    const answer =
+        confirm(
+            "ต้องการรีเซ็ตคิวร้าน " +
+            shop +
+            " ใช่หรือไม่?"
+        );
+
+
+    if (!answer) {
+
+        return;
+
+    }
+
+
+    const queue =
+        shop === "A"
+            ? queueA
+            : queueB;
+
+
+    try {
+
+        for (
+            const customer of queue
+        ) {
+
+            await remove(
+
+                ref(
+                    db,
+                    "queues/" +
+                    customer.id
+                )
+
+            );
+
+        }
+
+
+        await remove(
+
+            ref(
+                db,
+                "current/" +
+                shop
+            )
+
+        );
+
+
+        alert(
+            "✅ รีเซ็ตเรียบร้อยแล้ว"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "❌ รีเซ็ตไม่สำเร็จ\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+// =====================================
+// ปุ่มเรียกคิว
+// =====================================
+
+document.getElementById(
+    "nextA"
+).addEventListener(
+
+    "click",
+
+    () => {
+
+        nextQueue("A");
+
+    }
+
+);
+
+
+document.getElementById(
+    "nextB"
+).addEventListener(
+
+    "click",
+
+    () => {
+
+        nextQueue("B");
+
+    }
+
+);
+
+
+// =====================================
+// ปุ่มรีเซ็ต
+// =====================================
+
+document.getElementById(
+    "resetA"
+).addEventListener(
+
+    "click",
+
+    () => {
+
+        resetQueue("A");
+
+    }
+
+);
+
+
+document.getElementById(
+    "resetB"
+).addEventListener(
+
+    "click",
+
+    () => {
+
+        resetQueue("B");
+
+    }
+
+);
+
+
+// =====================================
+// Logout
+// =====================================
+
+document.getElementById(
+    "logoutButton"
+).addEventListener(
+
+    "click",
+
+    async () => {
+
+        try {
+
+            await signOut(auth);
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            alert(
+                "ออกจากระบบไม่สำเร็จ"
+            );
+
+        }
+
+    }
+
+);
+
+</script>
+
+</body>
+</html>
