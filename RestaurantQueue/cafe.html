@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ร้านน้ำคาเฟ่ - ระบบจองคิว</title>
+
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      font-family:Arial,sans-serif;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      min-height:100vh;
+      padding:30px 15px;
+    }
+
+    .container{
+      max-width:700px;
+      margin:auto;
+    }
+
+    .header{
+      background:white;
+      border-radius:20px;
+      padding:30px 20px;
+      text-align:center;
+      margin-bottom:20px;
+      box-shadow:0 5px 20px rgba(0,0,0,.15);
+    }
+
+    .header h1{
+      font-size:34px;
+      color:#5e35b1;
+      margin-bottom:8px;
+    }
+
+    .header p{
+      font-size:18px;
+      color:#777;
+    }
+
+    .card{
+      background:white;
+      border-radius:20px;
+      padding:25px;
+      margin-bottom:20px;
+      box-shadow:0 5px 20px rgba(0,0,0,.15);
+    }
+
+    .card h2{
+      text-align:center;
+      margin-bottom:20px;
+      font-size:25px;
+      color:#333;
+    }
+
+    .current{
+      text-align:center;
+    }
+
+    #currentQueue{
+      font-size:60px;
+      font-weight:bold;
+      color:#5e35b1;
+      margin-top:10px;
+    }
+
+    input{
+      width:100%;
+      padding:17px;
+      border:2px solid #ddd;
+      border-radius:12px;
+      font-size:20px;
+      margin-bottom:15px;
+    }
+
+    button{
+      width:100%;
+      padding:17px;
+      border:none;
+      border-radius:12px;
+      background:#5e35b1;
+      color:white;
+      font-size:22px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#4527a0;
+    }
+
+    .queue-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .queue-item{
+      background:#f3e8ff;
+      border-radius:12px;
+      padding:17px;
+      display:flex;
+      justify-content:space-between;
+      font-size:20px;
+    }
+
+    .queue-number{
+      font-weight:bold;
+      color:#5e35b1;
+    }
+
+    .empty{
+      text-align:center;
+      color:#999;
+      padding:20px;
+      font-size:18px;
+    }
+
+    .back-button{
+      display:block;
+      width:100%;
+      text-align:center;
+      background:white;
+      color:#5e35b1;
+      text-decoration:none;
+      font-size:25px;
+      font-weight:bold;
+      padding:20px;
+      border-radius:15px;
+      box-shadow:0 5px 15px rgba(0,0,0,.15);
+    }
+
+    .back-button:hover{
+      background:#ede7f6;
+    }
+
+    @media(max-width:600px){
+      #currentQueue{
+        font-size:50px;
+      }
+
+      .header h1{
+        font-size:28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>☕ ร้านน้ำคาเฟ่</h1>
+    <p>ระบบรับบัตรคิวร้านน้ำคาเฟ่</p>
+  </div>
+
+  <div class="card current">
+    <h2>📢 กำลังเรียกคิว</h2>
+    <div id="currentQueue">A000</div>
+  </div>
+
+  <div class="card">
+    <h2>📝 รับบัตรคิว</h2>
+
+    <input
+      type="text"
+      id="customerName"
+      placeholder="ชื่อลูกค้า"
+    >
+
+    <button onclick="bookQueue()">
+      🎫 รับบัตรคิว
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>📋 รายการคิว</h2>
+
+    <div id="queueList" class="queue-list">
+      <div class="empty">
+        กำลังโหลดข้อมูล...
+      </div>
+    </div>
+  </div>
+
+  <a href="index.html" class="back-button">
+    ← กลับไปเลือกหน้าร้าน
+  </a>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  onValue,
+  get,
+  push,
+  set
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyCinwLrAnugbxn2X60C8qTqBHWNDXzHB7c",
+  authDomain:"restaurantqueue-80705.firebaseapp.com",
+  databaseURL:"https://restaurantqueue-80705-default-rtdb.firebaseio.com",
+  projectId:"restaurantqueue-80705",
+  storageBucket:"restaurantqueue-80705.firebasestorage.app",
+  messagingSenderId:"944772230709",
+  appId:"1:944772230709:web:8a73bee17f067c8c48cb7c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const SHOP = "A";
+
+const queuesRef = ref(db,"queues");
+
+const currentRef = ref(db,"current/A");
+
+onValue(currentRef,(snapshot)=>{
+
+  const data = snapshot.val();
+
+  const number = Number(data?.number)||0;
+
+  document.getElementById("currentQueue").innerText =
+    "A"+String(number).padStart(3,"0");
+
+});
+
+onValue(queuesRef,(snapshot)=>{
+
+  const data = snapshot.val()||{};
+
+  const queueList =
+    document.getElementById("queueList");
+
+  queueList.innerHTML="";
+
+  const queues =
+    Object.values(data)
+    .filter(q =>
+      q.shop===SHOP &&
+      q.status==="waiting"
+    )
+    .sort((a,b)=>
+      a.queueNumber-b.queueNumber
+    );
+
+  if(queues.length===0){
+
+    queueList.innerHTML=
+      `<div class="empty">
+        ยังไม่มีคิว
+      </div>`;
+
+    return;
+  }
+
+  queues.forEach(q=>{
+
+    const div =
+      document.createElement("div");
+
+    div.className="queue-item";
+
+    div.innerHTML=`
+      <span class="queue-number">
+        ${q.number}
+      </span>
+
+      <span>
+        ${q.name}
+      </span>
+    `;
+
+    queueList.appendChild(div);
+
+  });
+
+});
+
+window.bookQueue = async function(){
+
+  const name =
+    document.getElementById("customerName")
+    .value.trim();
+
+  if(name===""){
+    alert("กรุณากรอกชื่อลูกค้า");
+    return;
+  }
+
+  const snapshot =
+    await get(queuesRef);
+
+  const data =
+    snapshot.val()||{};
+
+  let max=0;
+
+  Object.values(data).forEach(q=>{
+
+    if(q.shop===SHOP){
+
+      max=Math.max(
+        max,
+        Number(q.queueNumber)||0
+      );
+
+    }
+
+  });
+
+  const next=max+1;
+
+  const queueNumber=
+    "A"+String(next).padStart(3,"0");
+
+  const newRef=push(queuesRef);
+
+  await set(newRef,{
+
+    shop:"A",
+
+    queueNumber:next,
+
+    number:queueNumber,
+
+    name:name,
+
+    status:"waiting",
+
+    createdAt:Date.now()
+
+  });
+
+  document.getElementById("customerName").value="";
+
+  alert(
+    "รับคิวสำเร็จ!\n\nหมายเลขคิวของคุณคือ "+queueNumber
+  );
+
+};
+
+</script>
+
+</body>
+</html>
