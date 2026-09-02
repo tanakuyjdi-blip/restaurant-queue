@@ -1,0 +1,692 @@
+```html
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ร้านหม่าล่า - ระบบจองคิว</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ff9966, #ff5e62);
+      min-height: 100vh;
+      padding: 30px 15px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    /* =========================
+       หัวเว็บ
+    ========================= */
+
+    .header {
+      background: white;
+      border-radius: 20px;
+      padding: 30px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    .header h1 {
+      font-size: 34px;
+      color: #d84315;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 18px;
+      color: #777;
+    }
+
+    /* =========================
+       กล่อง
+    ========================= */
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    .card h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 25px;
+    }
+
+    /* =========================
+       คิวปัจจุบัน
+    ========================= */
+
+    .current {
+      text-align: center;
+    }
+
+    .current-number {
+      font-size: 60px;
+      font-weight: bold;
+      color: #e53935;
+      margin-top: 10px;
+    }
+
+    /* =========================
+       ช่องกรอกชื่อ
+    ========================= */
+
+    input {
+      width: 100%;
+      padding: 17px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 20px;
+      margin-bottom: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #ff7043;
+    }
+
+    /* =========================
+       ปุ่มรับคิว
+    ========================= */
+
+    .queue-button {
+      width: 100%;
+      padding: 17px;
+      border: none;
+      border-radius: 12px;
+      background: #e53935;
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .queue-button:hover {
+      background: #c62828;
+    }
+
+    /* =========================
+       รายการคิว
+    ========================= */
+
+    .queue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .queue-item {
+      background: #fff3e0;
+      border-radius: 12px;
+      padding: 17px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 20px;
+    }
+
+    .queue-number {
+      font-weight: bold;
+      color: #e53935;
+    }
+
+    .queue-name {
+      color: #444;
+    }
+
+    .empty {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+      font-size: 18px;
+    }
+
+    /* =========================
+       ปุ่มกลับหน้าเลือกร้าน
+    ========================= */
+
+    .back-button {
+      display: block;
+      width: 100%;
+      text-align: center;
+
+      background: white;
+      color: #d84315;
+
+      text-decoration: none;
+
+      font-size: 25px;
+      font-weight: bold;
+
+      padding: 20px 15px;
+
+      border-radius: 15px;
+
+      margin-top: 10px;
+      margin-bottom: 20px;
+
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+
+      transition: 0.2s;
+    }
+
+    .back-button:hover {
+      background: #fff3e0;
+      transform: scale(1.02);
+    }
+
+    /* =========================
+       มือถือ
+    ========================= */
+
+    @media (max-width: 600px) {
+
+      body {
+        padding: 15px 10px;
+      }
+
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .current-number {
+        font-size: 50px;
+      }
+
+      .back-button {
+        font-size: 22px;
+        padding: 18px 10px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- =========================
+         หัวข้อร้าน
+    ========================= -->
+
+    <div class="header">
+
+      <h1>🌶️ ร้านหม่าล่า</h1>
+
+      <p>ระบบรับบัตรคิวร้านหม่าล่า</p>
+
+    </div>
+
+
+    <!-- =========================
+         คิวปัจจุบัน
+    ========================= -->
+
+    <div class="card current">
+
+      <h2>📢 กำลังเรียกคิว</h2>
+
+      <div
+        id="currentQueue"
+        class="current-number"
+      >
+        B000
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         รับคิว
+    ========================= -->
+
+    <div class="card">
+
+      <h2>📝 รับบัตรคิว</h2>
+
+      <input
+        type="text"
+        id="customerName"
+        placeholder="ชื่อลูกค้า"
+      >
+
+      <button
+        class="queue-button"
+        onclick="bookQueue()"
+      >
+        🎫 รับบัตรคิว
+      </button>
+
+    </div>
+
+
+    <!-- =========================
+         รายการคิว
+    ========================= -->
+
+    <div class="card">
+
+      <h2>📋 รายการคิว</h2>
+
+      <div
+        id="queueList"
+        class="queue-list"
+      >
+
+        <div class="empty">
+          กำลังโหลดข้อมูล...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         กลับหน้าเลือกร้าน
+    ========================= -->
+
+    <a
+      href="index.html"
+      class="back-button"
+    >
+      ← กลับไปเลือกหน้าร้าน
+    </a>
+
+  </div>
+
+
+  <!-- =========================
+       Firebase
+  ========================= -->
+
+  <script type="module">
+
+    import {
+      initializeApp
+    }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      get,
+      push,
+      set
+    }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+    /* =========================
+       Firebase Config
+    ========================= */
+
+    const firebaseConfig = {
+
+      apiKey:
+        "AIzaSyCinwLrAnugbxn2X60C8qTqBHWNDXzHB7c",
+
+      authDomain:
+        "restaurantqueue-80705.firebaseapp.com",
+
+      databaseURL:
+        "https://restaurantqueue-80705-default-rtdb.firebaseio.com",
+
+      projectId:
+        "restaurantqueue-80705",
+
+      storageBucket:
+        "restaurantqueue-80705.firebasestorage.app",
+
+      messagingSenderId:
+        "944772230709",
+
+      appId:
+        "1:944772230709:web:8a73bee17f067c8c48cb7c",
+
+      measurementId:
+        "G-8NK846F8XE"
+    };
+
+
+    /* =========================
+       เริ่ม Firebase
+    ========================= */
+
+    const app =
+      initializeApp(firebaseConfig);
+
+    const db =
+      getDatabase(app);
+
+
+    /* =========================
+       อ้างอิงข้อมูล Firebase
+    ========================= */
+
+    const currentRef =
+      ref(db, "current/B");
+
+    const queuesRef =
+      ref(db, "queues");
+
+
+    /* =========================
+       แสดงคิวปัจจุบัน
+    ========================= */
+
+    onValue(
+      currentRef,
+      (snapshot) => {
+
+        const data =
+          snapshot.val();
+
+        if (
+          data &&
+          data.number
+        ) {
+
+          document
+            .getElementById("currentQueue")
+            .textContent =
+              data.number;
+
+        } else {
+
+          document
+            .getElementById("currentQueue")
+            .textContent =
+              "B000";
+
+        }
+
+      }
+    );
+
+
+    /* =========================
+       แสดงรายการคิวร้านหม่าล่า
+    ========================= */
+
+    onValue(
+      queuesRef,
+      (snapshot) => {
+
+        const data =
+          snapshot.val();
+
+        const queueList =
+          document.getElementById(
+            "queueList"
+          );
+
+
+        queueList.innerHTML = "";
+
+
+        if (!data) {
+
+          queueList.innerHTML =
+            '<div class="empty">ยังไม่มีคิว</div>';
+
+          return;
+        }
+
+
+        /* เอาเฉพาะร้าน B
+           และคิวที่กำลังรอ */
+
+        const queues =
+          Object.values(data)
+
+            .filter(
+              queue =>
+                queue.shop === "B" &&
+                queue.status === "waiting"
+            )
+
+            .sort(
+              (a, b) =>
+                (Number(a.queueNumber) || 0) -
+                (Number(b.queueNumber) || 0)
+            );
+
+
+        if (
+          queues.length === 0
+        ) {
+
+          queueList.innerHTML =
+            '<div class="empty">ยังไม่มีคิว</div>';
+
+          return;
+        }
+
+
+        /* แสดงคิว */
+
+        queues.forEach(
+          queue => {
+
+            const item =
+              document.createElement(
+                "div"
+              );
+
+
+            item.className =
+              "queue-item";
+
+
+            item.innerHTML = `
+
+              <span class="queue-number">
+                ${queue.number || ""}
+              </span>
+
+              <span class="queue-name">
+                ${queue.name || "ไม่ระบุชื่อ"}
+              </span>
+
+            `;
+
+
+            queueList.appendChild(
+              item
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+    /* =========================
+       รับคิวใหม่
+    ========================= */
+
+    window.bookQueue =
+      async function () {
+
+        const name =
+          document
+            .getElementById(
+              "customerName"
+            )
+            .value
+            .trim();
+
+
+        /* ตรวจสอบชื่อ */
+
+        if (!name) {
+
+          alert(
+            "กรุณากรอกชื่อลูกค้า"
+          );
+
+          return;
+        }
+
+
+        try {
+
+          /* อ่านข้อมูลคิวทั้งหมด */
+
+          const snapshot =
+            await get(
+              queuesRef
+            );
+
+
+          const data =
+            snapshot.val() || {};
+
+
+          /* หาหมายเลขคิวล่าสุด
+             ของร้านหม่าล่า */
+
+          let maxQueue = 0;
+
+
+          Object.values(data)
+            .forEach(
+              queue => {
+
+                if (
+                  queue.shop === "B"
+                ) {
+
+                  const number =
+                    Number(
+                      queue.queueNumber
+                    ) || 0;
+
+
+                  if (
+                    number > maxQueue
+                  ) {
+
+                    maxQueue =
+                      number;
+
+                  }
+
+                }
+
+              }
+            );
+
+
+          /* สร้างเลขคิวใหม่ */
+
+          const nextQueue =
+            maxQueue + 1;
+
+
+          /* B001
+             B002
+             B003 */
+
+          const queueNumber =
+            "B" +
+            String(nextQueue)
+              .padStart(3, "0");
+
+
+          /* สร้างข้อมูลใหม่ */
+
+          const newQueueRef =
+            push(
+              queuesRef
+            );
+
+
+          await set(
+            newQueueRef,
+            {
+
+              shop: "B",
+
+              queueNumber:
+                nextQueue,
+
+              number:
+                queueNumber,
+
+              name:
+                name,
+
+              status:
+                "waiting",
+
+              createdAt:
+                Date.now()
+
+            }
+          );
+
+
+          /* ล้างช่องชื่อ */
+
+          document
+            .getElementById(
+              "customerName"
+            )
+            .value = "";
+
+
+          /* แจ้งเลขคิว */
+
+          alert(
+            "รับคิวสำเร็จ!\n\n" +
+            "หมายเลขคิวของคุณคือ " +
+            queueNumber
+          );
+
+
+        }
+        catch (error) {
+
+          console.error(
+            error
+          );
+
+
+          alert(
+            "เกิดข้อผิดพลาดในการรับคิว\n" +
+            error.message
+          );
+
+        }
+
+      };
+
+  </script>
+
+</body>
+</html>
+```
